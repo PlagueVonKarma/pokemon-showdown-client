@@ -483,6 +483,7 @@ const BattlePokemonIconIndexes: {[id: string]: number} = {
 	chromera: 1308 + 31,
 	venomicon: 1308 + 32,
 	venomiconepilogue: 1308 + 33,
+	saharaja: 1308 + 34,
 
 	syclar: 1344 + 0,
 	embirch: 1344 + 1,
@@ -1364,6 +1365,7 @@ class Species implements Effect {
 	readonly tier: string;
 	readonly isTotem: boolean;
 	readonly isMega: boolean;
+	readonly cannotDynamax: boolean;
 	readonly canGigantamax: boolean;
 	readonly isPrimal: boolean;
 	readonly battleOnly: string | string[] | undefined;
@@ -1416,6 +1418,7 @@ class Species implements Effect {
 
 		this.isTotem = false;
 		this.isMega = !!(this.forme && ['-mega', '-megax', '-megay'].includes(this.formeid));
+		this.cannotDynamax = !!data.cannotDynamax;
 		this.canGigantamax = !!data.canGigantamax;
 		this.isPrimal = !!(this.forme && this.formeid === '-primal');
 		this.battleOnly = data.battleOnly || undefined;

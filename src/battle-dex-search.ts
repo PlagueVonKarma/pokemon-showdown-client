@@ -145,7 +145,7 @@ class DexSearch {
 			if (!['type', 'category', 'pokemon'].includes(type)) return false;
 			if (type === 'pokemon') entry[1] = toID(entry[1]);
 			if (!this.filters) this.filters = [];
-			this.filters.push(entry);
+			this.filters.push(entry)
 			this.results = null;
 			return true;
 		}
@@ -1292,14 +1292,20 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		if (dex.gen === 1) {
 			// Usually not useless for Gen 1
 			if ([
-				'acidarmor', 'amnesia', 'barrier', 'bind', 'blizzard', 'clamp', 'confuseray', 'counter', 'firespin', 'hyperbeam', 'mirrormove', 'pinmissile', 'razorleaf', 'sing', 'slash', 'sludge', 'twineedle', 'wrap',
+				'acidarmor', 'amnesia', 'barrier', 'bind', 'blizzard', 'clamp', 'confuseray', 'counter', 'firespin', 'growth', 'headbutt', 
+				'hyperbeam', 'mirrormove', 'pinmissile', 'razorleaf', 'sing', 'slash', 'sludge', 'twineedle', 'wrap',			
 			].includes(id)) {
 				return true;
 			}
 
 			// Usually useless for Gen 1
 			if ([
-				'disable', 'firepunch', 'icepunch', 'leechseed', 'quickattack', 'roar', 'thunderpunch', 'toxic', 'triattack', 'whirlwind',
+				'disable', 'haze', 'leechseed', 'quickattack', 'roar', 'thunder', 'toxic', 'triattack', 'waterfall', 'whirlwind',
+				// banned moves that do not show as useless
+				'dig', 'fly', 'fissure', 'horndrill', 'guillotine'
+				// moves that are useless on PS Main but I can't find the reason for coming up elsewhere - this removes them anyway
+				'bide', 'dig', 'dragonrage', 'psywave', 'rage', 'razorwind', 'skullbash', 'swift', 'focusenergy', 'karatechop', 
+				'thrash', 'petaldance', 'bubble', 'barrage', 'bite', 'aurorabeam', 'mist',
 			].includes(id)) {
 				return false;
 			}
@@ -1308,11 +1314,39 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 			case 'bubblebeam': return (!moves.includes('surf') && !moves.includes('blizzard'));
 			case 'doubleedge': return !moves.includes('bodyslam');
 			case 'doublekick': return !moves.includes('submission');
+			case 'firepunch': return !moves.includes('fireblast');
 			case 'megadrain': return !moves.includes('razorleaf') && !moves.includes('surf');
 			case 'megakick': return !moves.includes('hyperbeam');
 			case 'reflect': return !moves.includes('barrier') && !moves.includes('acidarmor');
 			case 'submission': return !moves.includes('highjumpkick');
+			case 'thunderpunch': return !moves.includes('thunderbolt');
+			case 'triattack': return !moves.includes('bodyslam');
+			case 'stomp': return !moves.includes('headbutt');
 			}
+			// Useful and Useless moves for Stadium OU, which changes many game mechanics.
+			if (this.formatType === 'stadium') {
+				if (['doubleedge', 'focusenergy', 'haze'].includes(id)) return true;
+				if (['hyperbeam', 'sing', 'hypnosis'].includes(id)) return false;
+				switch (id) {
+					case 'fly': return !moves.includes('drillpeck');
+					case 'dig': return !moves.includes('earthquake');
+				}
+			}
+			// KEP Integrations. This acts as a "correctional" patch.
+			if (this.formatType === 'gen1expansionpack') {
+				if (['bulletpunch', 'irondefense', 'ironhead', 'metalsound', 'drainingkiss', 'charm'].includes(id)) return true;
+				if (['magnetbomb', 'disarmingvoice', 'brutalswing'].includes(id)) return false;
+				switch (id) {
+					// steel hierarchy
+					case 'smartstrike': return !moves.includes('ironhead');
+					case 'magnetbomb': return !moves.includes('ironhead') && !moves.includes('smartstrike');
+					case 'mirrorshot': return !moves.includes('ironhead') && !moves.includes('smartstrike') && !moves.includes('magnetbomb');
+					// dark hierarchy
+					case 'kowtowcleave': return !moves.includes('nightslash');
+					case 'falsesurrender': return !moves.includes('kowtowcleave') && !moves.includes('nightslash');
+					case 'feintattack': return !moves.includes('kowtowcleave') && !moves.includes('falsesurrender') && !moves.includes('nightslash');
+					case 'brutalswing': return !moves.includes('kowtowcleave') && !moves.includes('falsesurrender') && !moves.includes('nightslash') && !moves.includes('feintattack');
+				}
 		}
 
 		if (this.formatType === 'letsgo') {

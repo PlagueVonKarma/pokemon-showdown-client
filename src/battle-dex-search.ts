@@ -145,7 +145,7 @@ class DexSearch {
 			if (!['type', 'category', 'pokemon'].includes(type)) return false;
 			if (type === 'pokemon') entry[1] = toID(entry[1]);
 			if (!this.filters) this.filters = [];
-			this.filters.push(entry);
+			this.filters.push(entry)
 			this.results = null;
 			return true;
 		}
